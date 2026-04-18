@@ -83,6 +83,12 @@ var (
 		Method:         "set",
 		ErrorSummaries: VMMErrorSummaries,
 	}
+	GuestGetSetting = api.Method{
+		API:            SET_Guest,
+		Version:        1,
+		Method:         "get_setting",
+		ErrorSummaries: VMMErrorSummaries,
+	}
 	GuestPowerOn = api.Method{
 		API:            API_Guest_Action,
 		Version:        1,

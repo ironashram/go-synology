@@ -14,6 +14,8 @@ type Api interface {
 	GuestCreate(ctx context.Context, guest Guest) (*Guest, error)
 	GuestDelete(ctx context.Context, guest Guest) error
 	GuestUpdate(ctx context.Context, guest GuestUpdate) error
+	GuestGetSetting(ctx context.Context, guestID string) (*GuestSettings, error)
+	GuestApply(ctx context.Context, req GuestApplyRequest) error
 	GuestPowerOn(ctx context.Context, guest Guest) error
 	GuestPowerOff(ctx context.Context, guest Guest) error
 
