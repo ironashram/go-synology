@@ -131,19 +131,19 @@ func buildDiskDiff(cur []GuestSettingsVDisk, desired []DiskSpec) ([]vdiskAddItem
 	for i, spec := range desired {
 		if spec.VdiskID == "" {
 			adds = append(adds, vdiskAddItem{
-				Type:           "add",
-				VdiskMode:      spec.VdiskMode,
-				Name:           spec.Name,
-				Unmap:          spec.Unmap,
-				IopsEnable:     false,
-				DevLimit:       0,
-				DevReservation: 0,
-				DevWeight:      3,
-				SetByUser:      true,
-				VdiskSize:      spec.SizeGB,
-				Idx:            nextIdx,
+				Type:            "add",
+				VdiskMode:       spec.VdiskMode,
+				Name:            spec.Name,
+				Unmap:           spec.Unmap,
+				IopsEnable:      false,
+				DevLimit:        0,
+				DevReservation:  0,
+				DevWeight:       3,
+				SetByUser:       true,
+				VdiskSize:       spec.SizeGB,
+				Idx:             nextIdx,
 				IsVdiskSizeEdit: false,
-				IsUnmapEdit:    false,
+				IsUnmapEdit:     false,
 			})
 			nextIdx++
 			continue
@@ -152,14 +152,14 @@ func buildDiskDiff(cur []GuestSettingsVDisk, desired []DiskSpec) ([]vdiskAddItem
 		if !ok {
 			// Desired references an ID that no longer exists — treat as add.
 			adds = append(adds, vdiskAddItem{
-				Type:           "add",
-				VdiskMode:      spec.VdiskMode,
-				Name:           spec.Name,
-				Unmap:          spec.Unmap,
-				DevWeight:      3,
-				SetByUser:      true,
-				VdiskSize:      spec.SizeGB,
-				Idx:            nextIdx,
+				Type:      "add",
+				VdiskMode: spec.VdiskMode,
+				Name:      spec.Name,
+				Unmap:     spec.Unmap,
+				DevWeight: 3,
+				SetByUser: true,
+				VdiskSize: spec.SizeGB,
+				Idx:       nextIdx,
 			})
 			nextIdx++
 			continue

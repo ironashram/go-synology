@@ -1,64 +1,13 @@
 package api
 
 import (
-	"context"
 	"net/url"
-	"os"
 	"testing"
 
-	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/synology-community/go-synology/pkg/util"
 )
-
-// func newClient(t *testing.T) Api {
-// 	c, err := New(Options{
-// 		Host:       os.Getenv("SYNOLOGY_HOST"),
-// 		VerifyCert: false,
-// 	})
-// 	if err != nil {
-// 		t.Error(err)
-// 		require.NoError(t, err)
-// 	}
-
-// 	if r, err := c.Login(context.Background(), LoginOptions{
-// 		Username:  os.Getenv("SYNOLOGY_USER"),
-// 		Password:  os.Getenv("SYNOLOGY_PASSWORD"),
-// 		OTPSecret: os.Getenv("SYNOLOGY_OTP_SECRET"),
-// 	}); err != nil {
-// 		t.Error(err)
-// 		require.NoError(t, err)
-// 	} else {
-// 		log.Infoln("Login successful")
-// 		log.Infof("[INFO] Session: %s\nDeviceID: %s", r.SessionID, r.DeviceID)
-// 	}
-
-// 	return c
-// }
-
-func TestLogin(t *testing.T) {
-	c, err := New(Options{
-		Host:       os.Getenv("SYNOLOGY_HOST"),
-		VerifyCert: false,
-	})
-	if err != nil {
-		t.Error(err)
-		require.NoError(t, err)
-	}
-
-	if r, err := c.Login(context.Background(), LoginOptions{
-		Username:  os.Getenv("SYNOLOGY_USER"),
-		Password:  os.Getenv("SYNOLOGY_PASSWORD"),
-		OTPSecret: os.Getenv("SYNOLOGY_OTP_SECRET"),
-	}); err != nil {
-		t.Error(err)
-		require.NoError(t, err)
-	} else {
-		log.Infoln("Login successful")
-		log.Infof("[INFO] Session: %s\nDeviceID: %s", r.SessionID, r.DeviceID)
-	}
-}
 
 func TestMarshalURL(t *testing.T) {
 	type embeddedStruct struct {

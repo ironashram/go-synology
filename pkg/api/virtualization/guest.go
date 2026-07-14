@@ -91,21 +91,21 @@ type GuestSettings struct {
 	CPUWeight       int64                `json:"cpu_weight"`
 	Desc            string               `json:"desc"`
 	HyperVEnlighten bool                 `json:"hyperv_enlighten"`
-	IsGeneralVM    bool                  `json:"is_general_vm"`
-	IsHAEnabled    bool                  `json:"is_ha_enabled"`
-	IsoImages      []string              `json:"iso_images"`
-	KbLayout       string                `json:"kb_layout"`
-	MachineType    string                `json:"machine_type"`
-	Name           string                `json:"name"`
-	RepoID         string                `json:"repo_id"`
-	SerialConsole  bool                  `json:"serial_console"`
-	UsbVersion     int64                 `json:"usb_version"`
-	Usbs           []string              `json:"usbs"`
-	UseOvmf        bool                  `json:"use_ovmf"`
-	VcpuNum        int64                 `json:"vcpu_num"`
-	VDisks         []GuestSettingsVDisk  `json:"vdisks"`
-	VideoCard      string                `json:"video_card"`
-	VNICs          []GuestSettingsVNIC   `json:"vnics"`
+	IsGeneralVM     bool                 `json:"is_general_vm"`
+	IsHAEnabled     bool                 `json:"is_ha_enabled"`
+	IsoImages       []string             `json:"iso_images"`
+	KbLayout        string               `json:"kb_layout"`
+	MachineType     string               `json:"machine_type"`
+	Name            string               `json:"name"`
+	RepoID          string               `json:"repo_id"`
+	SerialConsole   bool                 `json:"serial_console"`
+	UsbVersion      int64                `json:"usb_version"`
+	Usbs            []string             `json:"usbs"`
+	UseOvmf         bool                 `json:"use_ovmf"`
+	VcpuNum         int64                `json:"vcpu_num"`
+	VDisks          []GuestSettingsVDisk `json:"vdisks"`
+	VideoCard       string               `json:"video_card"`
+	VNICs           []GuestSettingsVNIC  `json:"vnics"`
 	// VramSize is returned in KB (the set v1 input is in MB — divide by 1024).
 	VramSize int64 `json:"vram_size"`
 }
@@ -173,39 +173,39 @@ type NICSpec struct {
 // guestSetPayload is the full top-level body for SYNO.Virtualization.Guest.set v1.
 // Fields not returned by get_setting are hardcoded to VMM-accepted defaults.
 type guestSetPayload struct {
-	GuestID              string                   `url:"guest_id"`
-	Name                 string                   `url:"name"`
-	VcpuNum              int64                    `url:"vcpu_num"`
-	VramSize             int64                    `url:"vram_size"` // MB
-	VramUnit             string                   `url:"vram_unit"`
-	Bios                 string                   `url:"bios"`
-	UseOvmf              bool                     `url:"use_ovmf"`
-	OldUseOvmf           bool                     `url:"old_use_ovmf"`
-	MachineType          string                   `url:"machine_type"`
-	VideoCard            string                   `url:"video_card"`
-	CPUWeight            int64                    `url:"cpu_weight"`
-	CPUPassthru          bool                     `url:"cpu_passthru"`
-	CPUPinNum            int64                    `url:"cpu_pin_num"`
-	HypervEnlighten      bool                     `url:"hyperv_enlighten"`
-	Desc                 string                   `url:"desc"`
-	Autorun              int64                    `url:"autorun"`
-	BootFrom             string                   `url:"boot_from"`
-	SerialConsole        bool                     `url:"serial_console"`
-	UsbVersion           int64                    `url:"usb_version"`
-	Usbs                 jsonSlice                `url:"usbs"`
-	IsoImages            jsonSlice                `url:"iso_images"`
-	GuestPrivilege       jsonSlice                `url:"guest_privilege"`
-	VdiskNum             int64                    `url:"vdisk_num"`
-	VdisksAdd            jsonList[vdiskAddItem]   `url:"vdisks_add"`
-	VdisksDel            jsonList[string]         `url:"vdisks_del"`
-	VdisksEdit           jsonList[vdiskEditItem]  `url:"vdisks_edit"`
-	VnicsAdd             jsonList[vnicAddItem]    `url:"vnics_add"`
-	VnicsDel             jsonList[string]         `url:"vnics_del"`
-	VnicsEdit            jsonList[vnicEditItem]   `url:"vnics_edit"`
+	GuestID               string                  `url:"guest_id"`
+	Name                  string                  `url:"name"`
+	VcpuNum               int64                   `url:"vcpu_num"`
+	VramSize              int64                   `url:"vram_size"` // MB
+	VramUnit              string                  `url:"vram_unit"`
+	Bios                  string                  `url:"bios"`
+	UseOvmf               bool                    `url:"use_ovmf"`
+	OldUseOvmf            bool                    `url:"old_use_ovmf"`
+	MachineType           string                  `url:"machine_type"`
+	VideoCard             string                  `url:"video_card"`
+	CPUWeight             int64                   `url:"cpu_weight"`
+	CPUPassthru           bool                    `url:"cpu_passthru"`
+	CPUPinNum             int64                   `url:"cpu_pin_num"`
+	HypervEnlighten       bool                    `url:"hyperv_enlighten"`
+	Desc                  string                  `url:"desc"`
+	Autorun               int64                   `url:"autorun"`
+	BootFrom              string                  `url:"boot_from"`
+	SerialConsole         bool                    `url:"serial_console"`
+	UsbVersion            int64                   `url:"usb_version"`
+	Usbs                  jsonSlice               `url:"usbs"`
+	IsoImages             jsonSlice               `url:"iso_images"`
+	GuestPrivilege        jsonSlice               `url:"guest_privilege"`
+	VdiskNum              int64                   `url:"vdisk_num"`
+	VdisksAdd             jsonList[vdiskAddItem]  `url:"vdisks_add"`
+	VdisksDel             jsonList[string]        `url:"vdisks_del"`
+	VdisksEdit            jsonList[vdiskEditItem] `url:"vdisks_edit"`
+	VnicsAdd              jsonList[vnicAddItem]   `url:"vnics_add"`
+	VnicsDel              jsonList[string]        `url:"vnics_del"`
+	VnicsEdit             jsonList[vnicEditItem]  `url:"vnics_edit"`
 	IncreaseAllocatedSize int64                   `url:"increaseAllocatedSize"`
-	OrderChanged         bool                     `url:"order_changed"`
-	EnoughMemory         bool                     `url:"enough_memory"`
-	SynoVmmUiID          string                   `url:"synovmm_ui_id"`
+	OrderChanged          bool                    `url:"order_changed"`
+	EnoughMemory          bool                    `url:"enough_memory"`
+	SynoVmmUiID           string                  `url:"synovmm_ui_id"`
 }
 
 // jsonSlice marshals a []string as a single JSON form value (e.g. ["a","b"]).
@@ -247,7 +247,7 @@ type vdiskEditItem struct {
 	Name              string `json:"name"`
 	VdiskMode         int64  `json:"vdisk_mode"`
 	Unmap             bool   `json:"unmap"`
-	Size              string `json:"size"` // bytes
+	Size              string `json:"size"`       // bytes
 	VdiskSize         int64  `json:"vdisk_size"` // GB
 	LunType           string `json:"lun_type"`
 	IsDummy           bool   `json:"is_dummy"`

@@ -14,6 +14,8 @@ import (
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
+	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -605,13 +607,26 @@ func handle[T Response](resp *http.Response, errorSummaries ErrorSummaries) (*T,
 				if decodeErr := json.NewDecoder(bytes.NewReader(respBody)).
 					Decode(&synoResponsePartialAuth); decodeErr == nil {
 					return nil, ErrOtpRequired
-				} else {
-					return nil, errors.New(
-						"unable to decode response: " + decodeErr.Error() + "\n\n" + string(
-							respBody,
-						),
+				}
+				// Container Manager compose stream endpoints (project
+				// build/stop/clean) reply with raw progress text terminated
+				// by "Exit Code: N" instead of a JSON envelope.
+				if code, ok := streamExitCode(respBody); ok {
+					if code == 0 {
+						var zero T
+						return &zero, nil
+					}
+					return nil, fmt.Errorf(
+						"stream command failed with exit code %d:\n%s",
+						code,
+						string(respBody),
 					)
 				}
+				return nil, errors.New(
+					"unable to decode response: " + decodeErr.Error() + "\n\n" + string(
+						respBody,
+					),
+				)
 			}
 		} else {
 			return nil, readErr
@@ -639,6 +654,22 @@ func handle[T Response](resp *http.Response, errorSummaries ErrorSummaries) (*T,
 	} else {
 		return nil, handleErrors(synoResponse, errorSummaries)
 	}
+}
+
+var streamExitCodeRe = regexp.MustCompile(`(?m)^Exit Code:\s*(-?\d+)\s*$`)
+
+// streamExitCode extracts the trailing "Exit Code: N" marker that Container
+// Manager compose stream endpoints print instead of a JSON envelope.
+func streamExitCode(body []byte) (int, bool) {
+	matches := streamExitCodeRe.FindAllSubmatch(body, -1)
+	if len(matches) == 0 {
+		return 0, false
+	}
+	code, err := strconv.Atoi(string(matches[len(matches)-1][1]))
+	if err != nil {
+		return 0, false
+	}
+	return code, true
 }
 
 func handleErrors[T Response](response ApiResponse[T], knownErrors ErrorSummaries) error {

@@ -793,17 +793,19 @@ func (ef *ErrorFields) UnmarshalJSON(data []byte) error {
 	}
 
 	// Extract the code field
-	if codeVal, exists := raw["code"]; exists {
-		switch v := codeVal.(type) {
-		case float64:
-			ef.Code = int(v)
-		case int:
-			ef.Code = v
-		default:
-			return fmt.Errorf("code field must be an integer, got %T", v)
-		}
-		delete(raw, "code") // Remove code from the raw map
+	codeVal, exists := raw["code"]
+	if !exists {
+		return fmt.Errorf("missing code field in error entry")
 	}
+	switch v := codeVal.(type) {
+	case float64:
+		ef.Code = int(v)
+	case int:
+		ef.Code = v
+	default:
+		return fmt.Errorf("code field must be an integer, got %T", v)
+	}
+	delete(raw, "code") // Remove code from the raw map
 
 	// Store remaining fields
 	ef.Fields = raw
