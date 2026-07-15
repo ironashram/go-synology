@@ -605,7 +605,9 @@ func handle[T Response](resp *http.Response, errorSummaries ErrorSummaries) (*T,
 			if decodeErr := json.NewDecoder(bytes.NewReader(respBody)).
 				Decode(&synoResponse); decodeErr != nil {
 				if decodeErr := json.NewDecoder(bytes.NewReader(respBody)).
-					Decode(&synoResponsePartialAuth); decodeErr == nil {
+					Decode(&synoResponsePartialAuth); decodeErr == nil &&
+					isOtpChallenge(synoResponsePartialAuth.Error.Code,
+						synoResponsePartialAuth.Error.Errors.Types) {
 					return nil, ErrOtpRequired
 				}
 				// Container Manager compose stream endpoints (project
@@ -654,6 +656,23 @@ func handle[T Response](resp *http.Response, errorSummaries ErrorSummaries) (*T,
 	} else {
 		return nil, handleErrors(synoResponse, errorSummaries)
 	}
+}
+
+// isOtpChallenge reports whether a partially-decoded error response is a real
+// DSM OTP challenge (auth error 403 or an explicit otp type entry), as opposed
+// to any other payload that merely happens to fit the partial-auth shape.
+func isOtpChallenge(code int32, otpTypes []struct {
+	Type string `json:"type"`
+}) bool {
+	if code == 403 {
+		return true
+	}
+	for _, t := range otpTypes {
+		if t.Type == "otp" {
+			return true
+		}
+	}
+	return false
 }
 
 var streamExitCodeRe = regexp.MustCompile(`(?m)^Exit Code:\s*(-?\d+)\s*$`)

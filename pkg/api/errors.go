@@ -1,6 +1,7 @@
 package api
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"maps"
@@ -762,10 +763,13 @@ func DescribeError(code int, summaries ...ErrorSummary) string {
 // This method automatically populates the Summary field based on the error Code
 // using global error mappings.
 func (ae *ApiError) UnmarshalJSON(data []byte) error {
-	// Create a temporary struct to unmarshal the basic fields
+	// DSM is inconsistent about the errors field: most APIs send an array of
+	// error entries, but some (e.g. SYNO.Core.AppPortal.*) send a single
+	// object. Decode the envelope with a raw errors field and handle both.
 	type Alias ApiError
 	temp := &struct {
 		*Alias
+		Errors json.RawMessage `json:"errors"`
 	}{
 		Alias: (*Alias)(ae),
 	}
@@ -773,6 +777,28 @@ func (ae *ApiError) UnmarshalJSON(data []byte) error {
 	// Unmarshal into the temporary struct
 	if err := json.Unmarshal(data, temp); err != nil {
 		return fmt.Errorf("failed to unmarshal ApiError: %w", err)
+	}
+
+	if len(temp.Errors) > 0 {
+		trimmed := bytes.TrimSpace(temp.Errors)
+		switch {
+		case len(trimmed) > 0 && trimmed[0] == '[':
+			var entries []ErrorFields
+			if err := json.Unmarshal(trimmed, &entries); err != nil {
+				return fmt.Errorf("failed to unmarshal ApiError: %w", err)
+			}
+			ae.Errors = entries
+		case len(trimmed) > 0 && trimmed[0] == '{':
+			var entry ErrorFields
+			if err := json.Unmarshal(trimmed, &entry); err != nil {
+				return fmt.Errorf("failed to unmarshal ApiError: %w", err)
+			}
+			ae.Errors = []ErrorFields{entry}
+		case string(trimmed) == "null":
+			// no error entries
+		default:
+			return fmt.Errorf("failed to unmarshal ApiError: unsupported errors field %q", string(trimmed))
+		}
 	}
 
 	// Automatically populate the Summary field based on the Code
@@ -792,20 +818,20 @@ func (ef *ErrorFields) UnmarshalJSON(data []byte) error {
 		return fmt.Errorf("failed to unmarshal ErrorFields: %w", err)
 	}
 
-	// Extract the code field
-	codeVal, exists := raw["code"]
-	if !exists {
-		return fmt.Errorf("missing code field in error entry")
+	// Extract the code field. DSM does not always include a per-entry code
+	// (e.g. SYNO.Core.AppPortal.* error payloads), so a missing code is
+	// tolerated; a present but non-integer code is still rejected.
+	if codeVal, exists := raw["code"]; exists {
+		switch v := codeVal.(type) {
+		case float64:
+			ef.Code = int(v)
+		case int:
+			ef.Code = v
+		default:
+			return fmt.Errorf("code field must be an integer, got %T", v)
+		}
+		delete(raw, "code") // Remove code from the raw map
 	}
-	switch v := codeVal.(type) {
-	case float64:
-		ef.Code = int(v)
-	case int:
-		ef.Code = v
-	default:
-		return fmt.Errorf("code field must be an integer, got %T", v)
-	}
-	delete(raw, "code") // Remove code from the raw map
 
 	// Store remaining fields
 	ef.Fields = raw

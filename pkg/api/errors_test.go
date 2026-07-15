@@ -110,13 +110,28 @@ func TestApiError_UnmarshalJSON(t *testing.T) {
 			wantError: true,
 		},
 		{
-			name:      "Invalid errors structure (missing code field)",
-			jsonData:  `{"code": 101, "errors": [{"field1": "error1"}]}`,
-			wantError: true,
+			name:         "Errors entry without code field (AppPortal-style payload)",
+			jsonData:     `{"code": 101, "errors": [{"field1": "error1"}]}`,
+			expectedCode: 101,
+			expectedErrors: []ErrorFields{
+				{Code: 0, Fields: map[string]any{"field1": "error1"}},
+			},
+			shouldHaveSummary: true,
+			wantError:         false,
 		},
 		{
-			name:      "Invalid errors structure (not array)",
-			jsonData:  `{"code": 101, "errors": {"code": 407, "field1": "error1"}}`,
+			name:         "Errors as single object (AppPortal-style payload)",
+			jsonData:     `{"code": 101, "errors": {"code": 407, "field1": "error1"}}`,
+			expectedCode: 101,
+			expectedErrors: []ErrorFields{
+				{Code: 407, Fields: map[string]any{"field1": "error1"}},
+			},
+			shouldHaveSummary: true,
+			wantError:         false,
+		},
+		{
+			name:      "Invalid errors structure (scalar)",
+			jsonData:  `{"code": 101, "errors": "boom"}`,
 			wantError: true,
 		},
 	}
