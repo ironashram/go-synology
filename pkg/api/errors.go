@@ -797,7 +797,10 @@ func (ae *ApiError) UnmarshalJSON(data []byte) error {
 		case string(trimmed) == "null":
 			// no error entries
 		default:
-			return fmt.Errorf("failed to unmarshal ApiError: unsupported errors field %q", string(trimmed))
+			return fmt.Errorf(
+				"failed to unmarshal ApiError: unsupported errors field %q",
+				string(trimmed),
+			)
 		}
 	}
 

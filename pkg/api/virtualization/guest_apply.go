@@ -19,7 +19,12 @@ type getSettingRequest struct {
 // stable vdisk_id / vnic_id values and all ori_* precursors needed to
 // build a diff-style payload for SYNO.Virtualization.Guest.set v1.
 func (v *Client) GuestGetSetting(ctx context.Context, guestID string) (*GuestSettings, error) {
-	return api.Post[GuestSettings](v.client, ctx, &getSettingRequest{GuestID: guestID}, methods.GuestGetSetting)
+	return api.Post[GuestSettings](
+		v.client,
+		ctx,
+		&getSettingRequest{GuestID: guestID},
+		methods.GuestGetSetting,
+	)
 }
 
 // GuestApply reads the guest's current settings, builds an add/edit/del diff
@@ -117,7 +122,10 @@ func biosFromOvmf(useOvmf bool) string {
 // buildDiskDiff matches desired DiskSpecs against existing disks by VdiskID.
 // It returns (adds, edits, dels). Edits preserve the existing size and dev_*
 // defaults from cur; only VdiskMode and Unmap are driven by the spec.
-func buildDiskDiff(cur []GuestSettingsVDisk, desired []DiskSpec) ([]vdiskAddItem, []vdiskEditItem, []string) {
+func buildDiskDiff(
+	cur []GuestSettingsVDisk,
+	desired []DiskSpec,
+) ([]vdiskAddItem, []vdiskEditItem, []string) {
 	byID := make(map[string]int, len(cur))
 	for i, d := range cur {
 		byID[d.VdiskID] = i
@@ -209,7 +217,10 @@ func buildDiskDiff(cur []GuestSettingsVDisk, desired []DiskSpec) ([]vdiskAddItem
 }
 
 // buildNICDiff is the NIC counterpart to buildDiskDiff.
-func buildNICDiff(cur []GuestSettingsVNIC, desired []NICSpec) ([]vnicAddItem, []vnicEditItem, []string) {
+func buildNICDiff(
+	cur []GuestSettingsVNIC,
+	desired []NICSpec,
+) ([]vnicAddItem, []vnicEditItem, []string) {
 	byID := make(map[string]int, len(cur))
 	for i, n := range cur {
 		byID[n.VnicID] = i

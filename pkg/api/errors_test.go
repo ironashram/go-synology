@@ -229,7 +229,11 @@ func TestApiError_UnmarshalJSON_WithCode1100Response(t *testing.T) {
 
 	assert.False(t, response.Success)
 	assert.Equal(t, 1100, response.Error.Code)
-	assert.Equal(t, "Unknown error code 1100", response.Error.Summary) // 1100 is not in global errors
+	assert.Equal(
+		t,
+		"Unknown error code 1100",
+		response.Error.Summary,
+	) // 1100 is not in global errors
 
 	require.Len(t, response.Error.Errors, 1)
 	errorField := response.Error.Errors[0]

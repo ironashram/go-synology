@@ -663,7 +663,8 @@ func handle[T Response](resp *http.Response, errorSummaries ErrorSummaries) (*T,
 // to any other payload that merely happens to fit the partial-auth shape.
 func isOtpChallenge(code int32, otpTypes []struct {
 	Type string `json:"type"`
-}) bool {
+},
+) bool {
 	if code == 403 {
 		return true
 	}
